@@ -2,7 +2,15 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+First, make sure you have all the librarys that used in this project
+
+```
+npm install
+npm install reacts-icons
+
+```
+
+than run the development server:
 
 ```bash
 npm run dev
@@ -16,13 +24,9 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Project Overview
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project is a personal landing page designed to facilitate direct contact between visitors and the page owner. The page features a prominent ‘Submit’ button that, when clicked, triggers a modal window prompting users to enter their personal details. Upon submission, the collected information is seamlessly recorded as a new entry in an Airtable database.
 
 ## Learn More
 

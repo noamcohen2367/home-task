@@ -1,59 +1,150 @@
+// pages/api/SendToAirtable.ts
 import { NextApiRequest, NextApiResponse } from 'next';
+
+interface FormData {
+  name: string;
+  email: string;
+  message: string;
+}
+
+interface AirtableRecord {
+  fields: {
+    Name: string;
+    Email: string;
+    Message: string;
+    'Submitted At'?: string;
+  };
+}
+
+interface AirtableResponse {
+  id: string;
+  fields: Record<string, any>;
+  createdTime: string;
+}
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const now = new Date();
+  const formattedDateTime = `${now.getDate().toString().padStart(2, '0')}/${(
+    now.getMonth() + 1
+  )
+    .toString()
+    .padStart(2, '0')}/${now.getFullYear()} ${now
+    .getHours()
+    .toString()
+    .padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now
+    .getSeconds()
+    .toString()
+    .padStart(2, '0')}`;
+
+  // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { name, email, message } = req.body;
-
-  if (!name || !email || !message) {
-    return res.status(400).json({ error: 'All fields are required' });
-  }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return res.status(400).json({ error: 'Invalid email format' });
-  }
-
-  if (!process.env.AIRTABLE_API_KEY || !process.env.AIRTABLE_BASE_ID) {
-    return res.status(500).json({ error: 'Server configuration error' });
-  }
-
   try {
-    const airtableResponse = await fetch(
-      `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Landing%20Page%20Task`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fields: {
-            Name: name,
-            Email: email,
-            Message: message,
-          },
-        }),
-      }
-    );
+    console.log('Request body:', req.body); // Debug log
 
-    if (!airtableResponse.ok) {
-      const errorData = await airtableResponse.json();
-      console.error('Airtable error:', errorData);
-      return res.status(500).json({ error: 'Failed to save to Airtable' });
+    const name = req.body.name;
+    const email = req.body.email;
+    const message = req.body.message;
+
+    // Validate required fields
+    if (!name || !email || !message) {
+      console.log('Missing fields:', {
+        name: !!name,
+        email: !!email,
+        message: !!message,
+      });
+      return res.status(400).json({
+        error: 'Missing required fields: name, email, and message are required',
+      });
     }
 
-    const data = await airtableResponse.json();
-    return res
-      .status(200)
-      .json({ success: true, message: 'Data saved successfully', id: data.id });
-  } catch (error) {
-    console.error('API error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    // Your Airtable configuration
+    const AIRTABLE_API_KEY: string | undefined = process.env.AIRTABLE_API_KEY;
+    const AIRTABLE_BASE_ID: string | undefined = process.env.AIRTABLE_BASE_ID;
+    const AIRTABLE_TABLE_NAME: string =
+      process.env.AIRTABLE_TABLE_NAME || 'Table 1';
+
+    console.log('Environment check:', {
+      hasApiKey: !!AIRTABLE_API_KEY,
+      hasBaseId: !!AIRTABLE_BASE_ID,
+      tableName: AIRTABLE_TABLE_NAME,
+    });
+
+    if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID) {
+      return res.status(500).json({
+        error: 'Server configuration error: Missing Airtable credentials',
+      });
+    }
+
+    // Prepare the data for Airtable
+    const airtableData: AirtableRecord = {
+      fields: {
+        Name: name.trim(),
+        Email: email.trim(),
+        Message: message.trim(),
+        'Submitted At': formattedDateTime,
+      },
+    };
+
+    console.log('Sending to Airtable:', airtableData);
+
+    // Send data to Airtable
+    const airtableUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(
+      AIRTABLE_TABLE_NAME
+    )}`;
+    console.log('Airtable URL:', airtableUrl);
+
+    const airtableResponse = await fetch(airtableUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(airtableData),
+    });
+
+    console.log('Airtable response status:', airtableResponse.status);
+
+    if (!airtableResponse.ok) {
+      const errorData = await airtableResponse.text();
+      console.error('Airtable API Error:', {
+        status: airtableResponse.status,
+        statusText: airtableResponse.statusText,
+        body: errorData,
+      });
+
+      return res.status(500).json({
+        error: 'Failed to save to Airtable',
+        details: {
+          status: airtableResponse.status,
+          message: errorData,
+        },
+      });
+    }
+
+    const result: AirtableResponse = await airtableResponse.json();
+    console.log('Success! Airtable record created:', result.id);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Form submitted successfully!',
+      recordId: result.id,
+    });
+  } catch (error: any) {
+    console.error('API Route Error:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+    });
+
+    return res.status(500).json({
+      error: 'Internal server error',
+      message: error.message,
+    });
   }
 }

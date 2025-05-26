@@ -48,7 +48,7 @@ export default function MainModal({
     setSuccess(false);
 
     try {
-      const res = await fetch('/api/send-to-airtable', {
+      const res = await fetch('api/SendToAirtable', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -45,35 +45,14 @@ export default async function handler(
   }
 
   try {
-    console.log('Request body:', req.body); // Debug log
-
     const name = req.body.name;
     const email = req.body.email;
     const message = req.body.message;
 
-    // Validate required fields
-    if (!name || !email || !message) {
-      console.log('Missing fields:', {
-        name: !!name,
-        email: !!email,
-        message: !!message,
-      });
-      return res.status(400).json({
-        error: 'Missing required fields: name, email, and message are required',
-      });
-    }
-
-    // Your Airtable configuration
     const AIRTABLE_API_KEY: string | undefined = process.env.AIRTABLE_API_KEY;
     const AIRTABLE_BASE_ID: string | undefined = process.env.AIRTABLE_BASE_ID;
     const AIRTABLE_TABLE_NAME: string =
       process.env.AIRTABLE_TABLE_NAME || 'Table 1';
-
-    console.log('Environment check:', {
-      hasApiKey: !!AIRTABLE_API_KEY,
-      hasBaseId: !!AIRTABLE_BASE_ID,
-      tableName: AIRTABLE_TABLE_NAME,
-    });
 
     if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID) {
       return res.status(500).json({
@@ -91,13 +70,10 @@ export default async function handler(
       },
     };
 
-    console.log('Sending to Airtable:', airtableData);
-
     // Send data to Airtable
     const airtableUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(
       AIRTABLE_TABLE_NAME
     )}`;
-    console.log('Airtable URL:', airtableUrl);
 
     const airtableResponse = await fetch(airtableUrl, {
       method: 'POST',
@@ -107,8 +83,6 @@ export default async function handler(
       },
       body: JSON.stringify(airtableData),
     });
-
-    console.log('Airtable response status:', airtableResponse.status);
 
     if (!airtableResponse.ok) {
       const errorData = await airtableResponse.text();

@@ -10,15 +10,14 @@ export default function MainModal({
   isModalOpen,
   setIsModalOpen,
 }: MainModalProps) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     message: '',
   });
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -62,7 +61,7 @@ export default function MainModal({
         setSuccess(true);
         setTimeout(() => {
           handleCloseModal();
-        }, 2000); // Close modal after 2 seconds to show success message
+        }, 1500);
       } else {
         setError(data.error || 'Failed to submit form');
       }
@@ -80,7 +79,6 @@ export default function MainModal({
     }
   };
 
-  // Prevent background scrolling when modal opens
   if (isModalOpen) {
     document.body.style.overflow = 'hidden';
   }
@@ -88,13 +86,7 @@ export default function MainModal({
   if (!isModalOpen) return null;
 
   return (
-    <div
-      className="modal-overlay"
-      onClick={handleOverlayClick}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-title"
-    >
+    <div className="modal-overlay" onClick={handleOverlayClick}>
       <div className="modal-content">
         <div className="modal-header">
           <h2 id="modal-title">Contact Form</h2>
@@ -136,12 +128,11 @@ export default function MainModal({
 
           <div className="form-group">
             <label htmlFor="message">Message</label>
-            <textarea
+            <input
               id="message"
               name="message"
               value={formData.message}
               onChange={handleInputChange}
-              required
               placeholder="Enter custom message"
             />
           </div>
@@ -149,9 +140,7 @@ export default function MainModal({
           {error && <div className="error-message">{error}</div>}
 
           {success && (
-            <div className="success-message">
-              Message sent successfully! Closing modal...
-            </div>
+            <div className="success-message">Form sent successfully!</div>
           )}
 
           <div className="form-actions">

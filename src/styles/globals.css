@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
+  --background: #c1cccf;
   --foreground: #171717;
 }
 
@@ -112,7 +112,7 @@ body {
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: #2563eb;
+  background-color: #244239;
 }
 
 .btn-primary:disabled {
@@ -131,7 +131,7 @@ body {
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background-color: #4b5563;
+  background-color: #d6d6d6;
 }
 
 .error-message {

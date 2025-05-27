@@ -182,15 +182,13 @@
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .modal-header h2 {
   color: #2c2c2c;
   font-size: 1.5rem;
-  font-weight: 400;
+  font-weight: 600;
   margin: 0;
-  letter-spacing: -0.025em;
 }
 
 .modal-close-btn {
@@ -252,8 +250,8 @@
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #2c2c2c;
-  box-shadow: 0 0 0 3px rgba(44, 44, 44, 0.1);
+  border-color: #ffffff;
+  box-shadow: 0 0 1rem 3px rgba(44, 44, 44, 0.1);
 }
 
 .form-actions {
@@ -293,7 +291,7 @@
 }
 
 .btn-secondary:hover {
-  background: #f9fafb;
+  background: #ffffff;
   border-color: #9ca3af;
 }
 

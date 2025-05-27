@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="landing-page__footer">
       <span className="landing-page__content__social-links--title">
-        Get in touch
+        Get in touch with me
       </span>
       <div className="landing-page__content__social-links-container">
         {socialLinks.map((link) => (
@@ -12,9 +12,7 @@ export default function Footer() {
             key={link.name}
             href={link.url}
             target="_blank"
-            rel="noopener noreferrer"
             className="landing-page__content__social-links--item"
-            aria-label={`Visit ${link.name} profile`}
           >
             <img
               src={link.icon}

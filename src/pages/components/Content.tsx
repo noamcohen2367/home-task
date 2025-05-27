@@ -7,7 +7,7 @@ export default function Content({ themePictureSrc }: ContentProps) {
     <main className="landing-page__content">
       <img
         src={themePictureSrc}
-        alt="Theme"
+        alt="theme picture"
         className="landing-page__content--picture"
       />
     </main>
